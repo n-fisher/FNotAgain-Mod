@@ -12,7 +12,6 @@ namespace FNotAgainMod
         public override void FromString(string settingValue)
         {
             SettingHandleConvertibleUtility.DeserializeValuesFromString(settingValue, this);
-            Log.Message(nums.Join(","));
         }
 
         public override string ToString()
