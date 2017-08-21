@@ -1,19 +1,24 @@
 ﻿using System;
 using Verse;
-
-[Serializable]
-public class CrashlandingHandle : SettingHandleConvertible
+using HugsLib.Settings;
+namespace FNotAgainMod
 {
-    [XmlElement] public List<Pawn> nums = new List<Pawn>();
 
-    public override void FromString(string settingValue)
+    [Serializable]
+    public class CrashlandingHandle : SettingHandleConvertible
     {
-        SettingHandleConvertibleUtility.DeserializeValuesFromString(settingValue, this);
-        Log.Message(nums.Join(","));
+        [XmlElement] public List<Pawn> pawns = new List<Pawn>();
+
+        public override void FromString(string settingValue)
+        {
+            SettingHandleConvertibleUtility.DeserializeValuesFromString(settingValue, this);
+            Log.Message(nums.Join(","));
+        }
+
+        public override string ToString()
+        {
+            return SettingHandleConvertibleUtility.SerializeValuesToString(this);
+        }
     }
 
-    public override string ToString()
-    {
-        return SettingHandleConvertibleUtility.SerializeValuesToString(this);
-    }
 }
