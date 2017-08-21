@@ -60,7 +60,7 @@ namespace FNotAgainMod
         public override void DefsLoaded()
         {
             isCrashlanding = Settings.GetHandle<bool>("isCrashlanding", "toggleSetting_label".Translate(), "toggleSetting_desc".Translate(), true);
-            savedPawns = Settings.GetHandle<CrashlandingHandle>("savedPawns", "saveDataHiddenTitle", "saveDataHiddenLabel", "");
+            savedPawns = Settings.GetHandle<CrashlandingHandle>("savedPawns", "saveDataHiddenTitle", "saveDataHiddenLabel", null);
             savedPawns.NeverVisible = true;
         }
     }

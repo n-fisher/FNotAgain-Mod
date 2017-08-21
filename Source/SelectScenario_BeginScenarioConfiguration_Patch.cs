@@ -1,16 +1,45 @@
-﻿using System;
+﻿using System.Reflection;
 using Hugslib;
-namespace FNotAgainMod { 
+using Verse;
+using Harmony;
+using UnityEngine;
+
+
+namespace FNotAgainMod {
+
+    [StaticConstructorOnStartup]
+    public static class SelectScenario_BeginScenarioConfiguration_Patch
+    {
+        static SelectScenario_BeginScenarioConfiguration_Patch()
+        {
+            var harmony = HarmonyInstance.Create(FNotAgainMod.Identifier);
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
+        }
+    }
 
     [HarmonyPatch(typeof(Page_SelectScenario), "BeginScenarioConfiguration")]
-    public static class SelectScenario_BeginScenarioConfiguration_Patch
+    class Crashland
     {
         [HarmonyPostfix]
         public static void Crashland()
         {
+            var pawns = Settings.GetHandle<CrashlandingHandle>("savedPawns");
+            if (Settings.GetHandle<bool>("isCrashlanding") && pawns != null)
+            {
+                Current.Game.InitData.startingPawns = pawns;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(ShipCountdown), "CountdownEnded")]
+    class SaveSurvivors {
+        [HarmonyPrefix]
+        public static void SaveSurvivors()
+        {
+            pawns = Settings.GetHandle<CrashlandingHandle>("savedPawns");
             if (Settings.GetHandle<bool>("isCrashlanding"))
             {
-                Current.Game.InitData.startingPawns = Settings.GetHandle<CrashlandingHandle>("savedPawns");
+                pawns.Value = PawnsFinder.AllMapsAndWorld_Alive;
             }
         }
     }
