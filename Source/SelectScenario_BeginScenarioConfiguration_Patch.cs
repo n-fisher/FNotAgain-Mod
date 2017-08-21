@@ -34,12 +34,30 @@ namespace FNotAgainMod {
     [HarmonyPatch(typeof(ShipCountdown), "CountdownEnded")]
     class SaveSurvivors {
         [HarmonyPrefix]
-        public static void SaveSurvivors()
+        public static void SaveSurvivors(ShipCountdown __instance)
         {
-            pawns = Settings.GetHandle<CrashlandingHandle>("savedPawns");
-            if (Settings.GetHandle<bool>("isCrashlanding"))
+            List<Pawn> pawnsToSave;
+            var savedPawns = Settings.GetHandle<CrashlandingHandle>("savedPawns");
+            
+            if (__instance.journeyDestinationTile >= 0)
             {
-                pawns.Value = PawnsFinder.AllMapsAndWorld_Alive;
+                CaravanJourneyDestinationUtility.PlayerCaravansAt(__instance.journeyDestinationTile, __instance.caravans);
+                foreach (List<Pawn> p in __instance.caravans)
+                {
+                    pawnsToSave.addRange(p);
+                }
+            }
+            else
+            {
+                List<Building> list = ShipUtility.ShipBuildingsAttachedTo(__instance.shipRoot).ToList<Building>();
+                foreach (Building current in list)
+                {
+                    Building_CryptosleepCasket building_CryptosleepCasket = current as Building_CryptosleepCasket;
+                    if (building_CryptosleepCasket != null && building_CryptosleepCasket.HasAnyContents && building_CryptosleepCasket.ContainedThing == typeof(Pawn))
+                    {
+                        pawnsToSave.add(building_CryptosleepCasket.ContainedThing);
+                    }
+                }
             }
         }
     }

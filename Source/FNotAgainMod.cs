@@ -7,6 +7,7 @@ using Verse.Pawn;
 using System.Reflection;
 using HugsLib.Settings;
 using UnityEngine;
+using CrashlandingHandle;
 
 namespace FNotAgainMod
 {
