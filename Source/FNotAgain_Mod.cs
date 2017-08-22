@@ -26,7 +26,6 @@ namespace FNotAgain_Mod
         {
             Crashland.settings = this.Settings;
             SaveSurvivors.settings = this.Settings;
-            Logger.Message("Test on initialize");
             base.Initialize();
         }
 
@@ -48,7 +47,7 @@ namespace FNotAgain_Mod
 
         private SettingHandle<bool> isCrashlanding;
 
-        private List<Pawn> savedPawns;
+        private List<Pawn> savedPawns = new List<Pawn>();
 
         public List<Pawn> SavedPawns
         {
@@ -69,10 +68,9 @@ namespace FNotAgain_Mod
 
         public override void DefsLoaded()
         {
-            Logger.Message("test on loaded");
             isCrashlanding = Settings.GetHandle<bool>("isCrashlanding", "toggleSetting_label".Translate(), "toggleSetting_desc".Translate(), true);
         }
-
+        
         [HarmonyPatch(typeof(Page_ConfigureStartingPawns), "PreOpen")]
         class Crashland
         {
@@ -81,14 +79,17 @@ namespace FNotAgain_Mod
             [HarmonyPrefix]
             public static void Crashland_Main()
             {
+                FNotAgain_Mod.Instance.Logger.Message("getting saved pawns");
                 var pawns = FNotAgain_Mod.Instance.SavedPawns;
+                FNotAgain_Mod.Instance.Logger.Message("checking for crash");
                 if (settings.GetHandle<bool>("isCrashlanding") && pawns.Count != 0)
                 {
-                    FNotAgain_Mod.Instance.Logger.Message("Loading pawns");
                     foreach(Pawn p in pawns)
                     {
+                        FNotAgain_Mod.Instance.Logger.Message("Clearing relations");
                         p.relations.ClearAllRelations();
                     }
+                    FNotAgain_Mod.Instance.Logger.Message("Loaded " + pawns.Count + " pawns");
                     Current.Game.InitData.startingPawns = pawns;
                 }
             }
@@ -98,26 +99,6 @@ namespace FNotAgain_Mod
         class SaveSurvivors
         {
             public static ModSettingsPack settings;
-
-            /*public static void SaveTheCaravans()
-            {
-                            FNotAgain_Mod.Instance.Logger.Message("getting caravans");
-                List<Caravan> caravans = (List<Caravan>)AccessTools.Field(typeof(ShipCountdown), "caravans").GetValue(null);
-                
-
-                if (journeyDestinationTile >= 0)
-                {
-                    FNotAgain_Mod.Instance.Logger.Message("if");
-                    CaravanJourneyDestinationUtility.PlayerCaravansAt(journeyDestinationTile, caravans);
-                    foreach (Caravan c in caravans)
-                    {
-                        List<Pawn> p = c.pawns.InnerListForReading;
-                        pawnsToSave.AddRange(p);
-                    }
-                }
-                else
-                {
-            }*/
 
             [HarmonyPrefix]
             public static void InitiateCountdown_Patch(ref Building launchingShipRoot, ref int journeyDestinationTile)
@@ -135,7 +116,6 @@ namespace FNotAgain_Mod
                         pawnsToSave.Add((Pawn)building_CryptosleepCasket.ContainedThing);
                     }
                 }
-                FNotAgain_Mod.Instance.Logger.Message("saving");
                 FNotAgain_Mod.Instance.SavedPawns = pawnsToSave;
                 FNotAgain_Mod.Instance.Logger.Message("Saved " + FNotAgain_Mod.Instance.SavedPawns.Count + " pawns");
             }
