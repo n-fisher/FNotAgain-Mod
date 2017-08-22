@@ -6,7 +6,7 @@ This mod saves your pawns when you launch them in a ship, allowing you to crash 
 ## Known Bugs/Limitations/Requirements:
 Currently this mod only works for the rocket ship game ending, not the friendly AI caravan ending. Saved pawns will lose their clothes and forget their relationships, and animals won't be saved into the new game even if they are in cryptosleep caskets. 
 
-Must start new game after finishing old game without exiting Rimworld in between.
+Must start new game after finishing old game without exiting Rimworld in between (exiting Rimworld clears saved pawns).
 
 Requires Hugslib to be installed, and in the load queue before this mod's place.
 
