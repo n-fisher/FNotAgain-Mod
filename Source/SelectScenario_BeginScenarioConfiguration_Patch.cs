@@ -1,19 +1,20 @@
-﻿using System.Reflection;
-using Hugslib;
+﻿using System.Collections.Generic;
+using RimWorld;
 using Verse;
 using Harmony;
-using UnityEngine;
+using HugsLib.Settings;
 
 
-namespace FNotAgainMod {
+namespace FNotAgain_Mod {
 
     [StaticConstructorOnStartup]
     public static class SelectScenario_BeginScenarioConfiguration_Patch
     {
         static SelectScenario_BeginScenarioConfiguration_Patch()
         {
-            var harmony = HarmonyInstance.Create(FNotAgainMod.Identifier);
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            //var harmony = HarmonyInstance.Create(FNotAgainMod.HarmonyInstanceId);
+            //harmony.PatchAll(typeof(FNotAgainMod).Assembly);
+            //FNotAgainMod.Logger.Message("see me?");
         }
     }
 
@@ -21,10 +22,10 @@ namespace FNotAgainMod {
     class Crashland
     {
         [HarmonyPostfix]
-        public static void Crashland()
+        public static void Crashland_Main(Page_SelectScenario __instance)
         {
-            var pawns = Settings.GetHandle<CrashlandingHandle>("savedPawns");
-            if (Settings.GetHandle<bool>("isCrashlanding") && pawns != null)
+            var pawns = FNotAgain_Mod.Instance.SavedPawns;
+            if ( Settings.GetHandle<bool>("isCrashlanding") && pawns != null)
             {
                 Current.Game.InitData.startingPawns = pawns;
             }
@@ -33,11 +34,11 @@ namespace FNotAgainMod {
 
     [HarmonyPatch(typeof(ShipCountdown), "CountdownEnded")]
     class SaveSurvivors {
-        [HarmonyPrefix]
-        public static void SaveSurvivors(ShipCountdown __instance)
+        [HarmonyPrepare]
+        public static void SaveSurvivors_Main()
         {
             List<Pawn> pawnsToSave;
-            var savedPawns = Settings.GetHandle<CrashlandingHandle>("savedPawns");
+            var savedPawns = FNotAgain_Mod.Settings.GetHandle<CrashlandingHandle>("savedPawns");
             
             if (__instance.journeyDestinationTile >= 0)
             {

@@ -1,3 +1,3 @@
-C:\SteamLibrary\SteamApps\common\RimWorld\Mods\FNotAgain Mod\Assemblies\FNotAgain.dll
+C:\SteamLibrary\SteamApps\common\RimWorld\Mods\FNotAgain Mod\Assemblies\FNotAgain_Mod.dll
+C:\SteamLibrary\SteamApps\common\RimWorld\Mods\FNotAgain Mod\Source\obj\Debug\FNotAgain_Mod.dll
 C:\SteamLibrary\SteamApps\common\RimWorld\Mods\FNotAgain Mod\Source\obj\Debug\FNotAgain.csprojResolveAssemblyReference.cache
-C:\SteamLibrary\SteamApps\common\RimWorld\Mods\FNotAgain Mod\Source\obj\Debug\FNotAgain.dll
