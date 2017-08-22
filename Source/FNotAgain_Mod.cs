@@ -48,19 +48,18 @@ namespace FNotAgain_Mod
 
         private SettingHandle<bool> isCrashlanding;
 
-        private SettingHandle<CrashlandingHandle> savedPawns;
+        private List<Pawn> savedPawns;
 
         public List<Pawn> SavedPawns
         {
-            get
-            {
-                return savedPawns.Value.innerList;
-            }
-            set
-            {
-                savedPawns.Value.innerList = value;
-                HugsLibController.SettingsManager.SaveChanges();
-            }
+            get => savedPawns;
+            set => savedPawns = value;
+        }
+
+        public bool IsCrashlanding
+        {
+            get => isCrashlanding.Value;
+            set => isCrashlanding.Value = value;
         }
 
         public override string ModIdentifier
@@ -72,68 +71,24 @@ namespace FNotAgain_Mod
         {
             Logger.Message("test on loaded");
             isCrashlanding = Settings.GetHandle<bool>("isCrashlanding", "toggleSetting_label".Translate(), "toggleSetting_desc".Translate(), true);
-            savedPawns = Settings.GetHandle<CrashlandingHandle>("savedPawns", "saveDataHiddenTitle", "saveDataHiddenLabel", new CrashlandingHandle());
-            savedPawns.NeverVisible = false;
         }
 
-        [Serializable]
-        public class CrashlandingHandle : SettingHandleConvertible
-        {
-            [XmlElement] private List<Pawn> pawns = new List<Pawn>();
-
-            public CrashlandingHandle()
-            {}
-
-            public CrashlandingHandle(List<Pawn> pawnList)
-            {
-                pawns = pawnList;
-            }
-
-            public List<Pawn> innerList
-            {
-                get => pawns;
-                set => pawns = value;
-                /*get {
-                    List<Pawn> ret = new List<Pawn>();
-                    foreach(SerializablePawn p in pawns)
-                    {
-                        ret.Add((Pawn)p);
-                    }
-                    return ret;
-                }
-                set {
-                    pawns.Clear();
-                    foreach (Pawn p in value)
-                    {
-                        pawns.Add((SerializablePawn)p);
-                    }
-                }*/
-            }
-
-            public override void FromString(string settingValue)
-            {
-                pawns = JsonConvert.DeserializeObject<List<Pawn>>(settingValue);
-                //SettingHandleConvertibleUtility.DeserializeValuesFromString(settingValue, pawns);
-            }
-
-            public override string ToString()
-            {
-                return JsonConvert.SerializeObject(pawns);
-                //return SettingHandleConvertibleUtility.SerializeValuesToString(pawns);
-            }
-        }
-
-        [HarmonyPatch(typeof(Page_SelectScenario), "BeginScenarioConfiguration")]
+        [HarmonyPatch(typeof(Page_ConfigureStartingPawns), "PreOpen")]
         class Crashland
         {
             public static ModSettingsPack settings;
 
-            [HarmonyPostfix]
+            [HarmonyPrefix]
             public static void Crashland_Main()
             {
                 var pawns = FNotAgain_Mod.Instance.SavedPawns;
                 if (settings.GetHandle<bool>("isCrashlanding") && pawns.Count != 0)
                 {
+                    FNotAgain_Mod.Instance.Logger.Message("Loading pawns");
+                    foreach(Pawn p in pawns)
+                    {
+                        p.relations.ClearAllRelations();
+                    }
                     Current.Game.InitData.startingPawns = pawns;
                 }
             }
@@ -167,10 +122,7 @@ namespace FNotAgain_Mod
             [HarmonyPrefix]
             public static void InitiateCountdown_Patch(ref Building launchingShipRoot, ref int journeyDestinationTile)
             {
-            FNotAgain_Mod.Instance.Logger.Message("getting savedpawns");
-            CrashlandingHandle savedPawns = settings.GetHandle<CrashlandingHandle>("savedPawns");
-            FNotAgain_Mod.Instance.Logger.Message("creating pawnstosave");
-            List<Pawn> pawnsToSave = new List<Pawn>();
+                List<Pawn> pawnsToSave = new List<Pawn>();
                 FNotAgain_Mod.Instance.Logger.Message("else");
                 List<Building> list = ShipUtility.ShipBuildingsAttachedTo(launchingShipRoot).ToList<Building>();
                 foreach (Building current in list)
@@ -184,8 +136,8 @@ namespace FNotAgain_Mod
                     }
                 }
                 FNotAgain_Mod.Instance.Logger.Message("saving");
-                savedPawns.innerList = pawnsToSave;
-                FNotAgain_Mod.Instance.Logger.Message("Saved pawn " + savedPawns.ToString());
+                FNotAgain_Mod.Instance.SavedPawns = pawnsToSave;
+                FNotAgain_Mod.Instance.Logger.Message("Saved " + FNotAgain_Mod.Instance.SavedPawns.Count + " pawns");
             }
         }
         
