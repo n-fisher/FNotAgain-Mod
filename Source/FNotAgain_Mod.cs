@@ -93,7 +93,7 @@ namespace FNotAgain_Mod
                 foreach (Building current in list)
                 {
                     Building_CryptosleepCasket building_CryptosleepCasket = current as Building_CryptosleepCasket;
-                    if (building_CryptosleepCasket != null && building_CryptosleepCasket.HasAnyContents && (building_CryptosleepCasket.ContainedThing.GetType() == typeof(Pawn) || building_CryptosleepCasket.ContainedThing.GetType() == typeof(Psychology.PsychologyPawn)))
+                    if (building_CryptosleepCasket != null && building_CryptosleepCasket.HasAnyContents && (building_CryptosleepCasket.ContainedThing is Pawn))
                     {
                         pawnsToSave.Add((Pawn)building_CryptosleepCasket.ContainedThing);
                     }
