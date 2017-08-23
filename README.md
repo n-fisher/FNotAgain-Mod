@@ -12,6 +12,7 @@ Must start new game after finishing old game without exiting Rimworld in between
 
 Requires Hugslib to be installed, and in the load queue before this mod's place.
 
+PsychologyMod Compatibility: Finished - thanks to @CookieWookiee
 ## Updates
 Aug 22 2017
 Initial Release
